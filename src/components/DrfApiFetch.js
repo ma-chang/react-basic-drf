@@ -3,17 +3,37 @@ import axios from 'axios';
 
 const DrfApiFetch = () => {
   const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState([]);
+  const [id, setId] = useState(1);
+
+  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+  const API_TOKEN = process.env.REACT_APP_API_TOKEN;
+
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/tasks/', {
+      .get(`${API_ENDPOINT}tasks/`, {
         headers: {
-          Authorization: 'Token ecc8abee3bbbb0d8767a7918fd6ec1b4d938fb29',
+          Authorization: API_TOKEN,
         },
       })
       .then((res) => {
         setTasks(res.data);
       });
   }, []);
+
+  const getTask = () => {
+    axios
+      .get(`${API_ENDPOINT}tasks/${id}`, {
+        headers: {
+          Authorization: API_TOKEN,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        setSelectedTask(res.data);
+      });
+  };
+
   return (
     <div>
       <ul>
@@ -23,6 +43,16 @@ const DrfApiFetch = () => {
           </li>
         ))}
       </ul>
+      Set Id
+      <br />
+      <input type='text' value={id} onChange={(e) => setId(e.target.value)} />
+      <br />
+      <button type='button' onClick={() => getTask()}>
+        Get Task
+      </button>
+      <h3>
+        {selectedTask.id}:{selectedTask.title}
+      </h3>
     </div>
   );
 };
