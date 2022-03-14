@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { logRoles } from '@testing-library/react';
 
 const DrfApiFetch = () => {
   const [tasks, setTasks] = useState([]);
@@ -29,8 +30,19 @@ const DrfApiFetch = () => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setSelectedTask(res.data);
+      });
+  };
+
+  const deleteTask = () => {
+    axios
+      .delete(`${API_ENDPOINT}tasks/${id}`, {
+        headers: {
+          Authorization: API_TOKEN,
+        },
+      })
+      .then((res) => {
+        console.log(res);
       });
   };
 
@@ -49,6 +61,9 @@ const DrfApiFetch = () => {
       <br />
       <button type='button' onClick={() => getTask()}>
         Get Task
+      </button>
+      <button type='button' onClick={() => deleteTask()}>
+        Delete Task
       </button>
       <h3>
         {selectedTask.id}:{selectedTask.title}
