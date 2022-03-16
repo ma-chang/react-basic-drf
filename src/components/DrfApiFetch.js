@@ -42,7 +42,8 @@ const DrfApiFetch = () => {
         },
       })
       .then((res) => {
-        console.log(res);
+        setTasks(tasks.filter((task) => task.id !== id));
+        setSelectedTask([]);
       });
   };
 
@@ -52,6 +53,9 @@ const DrfApiFetch = () => {
         {tasks.map((task) => (
           <li key={task.id}>
             {task.id} : {task.title}
+            <button type='button' onClick={() => deleteTask(task.id)}>
+              <i className='fas fa-trash-alt'></i>
+            </button>
           </li>
         ))}
       </ul>
@@ -61,9 +65,6 @@ const DrfApiFetch = () => {
       <br />
       <button type='button' onClick={() => getTask()}>
         Get Task
-      </button>
-      <button type='button' onClick={() => deleteTask()}>
-        Delete Task
       </button>
       <h3>
         {selectedTask.id}:{selectedTask.title}
