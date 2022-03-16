@@ -35,7 +35,7 @@ const DrfApiFetch = () => {
       });
   };
 
-  const deleteTask = () => {
+  const deleteTask = (id) => {
     axios
       .delete(`${API_ENDPOINT}tasks/${id}`, {
         headers: {
@@ -45,8 +45,10 @@ const DrfApiFetch = () => {
       .then((res) => {
         setTasks(tasks.filter((task) => task.id !== id));
         setSelectedTask([]);
+        if (editedTask.id === id) setEditedTask({ id: '', title: '' });
       });
   };
+
   const newTask = (task) => {
     const data = {
       title: task.title,
@@ -58,7 +60,24 @@ const DrfApiFetch = () => {
           Authorization: API_TOKEN,
         },
       })
-      .then((res) => setTasks([...tasks, res.data]));
+      .then((res) => {
+        setTasks([...tasks, res.data]);
+        setEditedTask({ id: '', title: '' });
+      });
+  };
+
+  const editTask = (task) => {
+    axios
+      .put(`${API_ENDPOINT}tasks/${task.id}/`, task, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: API_TOKEN,
+        },
+      })
+      .then((res) => {
+        setTasks(tasks.map((task) => (task.id === editedTask.id ? res.data : task)));
+        setEditedTask({ id: '', title: '' });
+      });
   };
 
   const handleInputChange = (e) => {
@@ -75,6 +94,9 @@ const DrfApiFetch = () => {
             {task.id} : {task.title}
             <button type='button' onClick={() => deleteTask(task.id)}>
               <i className='fas fa-trash-alt'></i>
+            </button>
+            <button type='button' onClick={() => setEditedTask(task)}>
+              <i className='fas fa-pen'></i>
             </button>
           </li>
         ))}
@@ -97,9 +119,15 @@ const DrfApiFetch = () => {
         placeholder='New task ?'
         required
       />
-      <button type='button' onClick={() => newTask(editedTask)}>
-        Create
-      </button>
+      {editedTask.id ? (
+        <button type='button' onClick={() => editTask(editedTask)}>
+          Update
+        </button>
+      ) : (
+        <button type='button' onClick={() => newTask(editedTask)}>
+          Create
+        </button>
+      )}
     </div>
   );
 };
