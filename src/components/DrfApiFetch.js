@@ -5,6 +5,7 @@ import { logRoles } from '@testing-library/react';
 const DrfApiFetch = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState([]);
+  const [editedTask, setEditedTask] = useState({ id: '', title: '' });
   const [id, setId] = useState(1);
 
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
@@ -46,6 +47,25 @@ const DrfApiFetch = () => {
         setSelectedTask([]);
       });
   };
+  const newTask = (task) => {
+    const data = {
+      title: task.title,
+    };
+    axios
+      .post(`${API_ENDPOINT}tasks/`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: API_TOKEN,
+        },
+      })
+      .then((res) => setTasks([...tasks, res.data]));
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    setEditedTask({ ...editedTask, [name]: value });
+  };
 
   return (
     <div>
@@ -69,6 +89,17 @@ const DrfApiFetch = () => {
       <h3>
         {selectedTask.id}:{selectedTask.title}
       </h3>
+      <input
+        type='text'
+        name='title'
+        value={editedTask.title}
+        onChange={(e) => handleInputChange(e)}
+        placeholder='New task ?'
+        required
+      />
+      <button type='button' onClick={() => newTask(editedTask)}>
+        Create
+      </button>
     </div>
   );
 };
